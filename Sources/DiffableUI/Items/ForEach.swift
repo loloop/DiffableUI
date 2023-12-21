@@ -15,7 +15,7 @@ extension CollectionItemBuilder {
 }
 
 public struct ForEach {
-  public init<T>(data: [T], @CollectionItemBuilder items: (T) -> [any CollectionItem]) {
+  public init<T>(data: any RandomAccessCollection<T>, @CollectionItemBuilder items: (T) -> [any CollectionItem]) {
     self.items = data.map { items($0) }.flatMap { $0 }
   }
 

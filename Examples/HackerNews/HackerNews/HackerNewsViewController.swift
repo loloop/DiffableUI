@@ -9,6 +9,7 @@ import DiffableUI
 import Foundation
 import SwiftUI
 import SafariServices
+import OrderedCollections
 
 enum APIState<T> {
   case idle
@@ -20,19 +21,27 @@ final class HackerNewsViewController: DiffableViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-
-    reload()
+    configureCollectionView()
 
     Task {
-      try await fetchNews()
+      try await fetch()
     }
   }
 
-  var state: APIState<[NewsItem]> = .idle {
-    didSet {
-      reload()
-    }
+  func configureCollectionView() {
+    collectionView.refreshControl = UIRefreshControl(
+      frame: .zero,
+      primaryAction: .init(
+        handler: { [weak self] _ in
+          Task {
+            self?.state = .loading
+            try await self?.fetch(page: 0)
+          }
+        }))
   }
+
+  var state: APIState<OrderedSet<NewsItem>> = .idle
+  var currentPage = 1
 
   @CollectionViewBuilder
   override var sections: [any CollectionSection] {
@@ -52,23 +61,40 @@ final class HackerNewsViewController: DiffableViewController {
                 .navigationController?
                 .present(controller, animated: true)
             }
-             .padding(.vertical(8).horizontal(12))
+            .padding(.vertical(8).horizontal(12))
         }
+        ActivityIndicator()
+          .onAppear { [weak self] in
+            let page = self?.currentPage ?? 0
+            try await self?.fetch(page: page)
+          }
       }
     }
     .contentInsetsReference(.readableContent)
   }
 
-  func fetchNews() async throws {
-    state = .loading
-
-    guard let url = URL(string: "https://api.hackerwebapp.com/news") else { return }
+  func fetch(page: Int = 1) async throws {
+    guard let url = URL(string: "https://api.hackerwebapp.com/news?page=\(page)") else { return }
     let (data, _) = try await URLSession.shared.data(from: url)
     let decoder = JSONDecoder()
     decoder.keyDecodingStrategy = .convertFromSnakeCase
     let news = try decoder.decode([NewsItem].self, from: data)
-    state = .finished(news)
+
+    if case .finished(let t) = state {
+      state = .finished(OrderedSet(t+news))
+    } else {
+      state = .finished(OrderedSet(news))
+    }
+
+    collectionView.refreshControl?.endRefreshing()
+    currentPage += 1
+    await reload()
   }
+}
+
+struct HackerNews: UIViewControllerRepresentable {
+  func makeUIViewController(context: Context) -> HackerNewsViewController { .init() }
+  func updateUIViewController(_ uiViewController: HackerNewsViewController, context: Context) {}
 }
 
 #Preview {

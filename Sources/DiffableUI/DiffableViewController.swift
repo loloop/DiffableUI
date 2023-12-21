@@ -50,6 +50,25 @@ open class DiffableViewController: UICollectionViewController {
 
     let shouldAnimate = animated && !oldValue.isEmpty && !computedSections.isEmpty
 
+      diffableDataSource.apply(
+        computedSections.snapshot,
+        animatingDifferences: shouldAnimate,
+        completion: completion)
+  }
+
+  @MainActor
+  public func reload(animated: Bool = true, completion: (() -> Void)? = nil) async {
+    let oldValue = self.computedSections
+    self.computedSections = sections
+
+    updateAllVisibleItems(
+      oldSections: oldValue,
+      newSections: sections,
+      collectionView: collectionView,
+      dataSource: diffableDataSource)
+
+    let shouldAnimate = animated && !oldValue.isEmpty && !computedSections.isEmpty
+
     diffableDataSource.apply(
       computedSections.snapshot,
       animatingDifferences: shouldAnimate,
@@ -109,6 +128,15 @@ open class DiffableViewController: UICollectionViewController {
   {
     let item = computedSections[indexPath.section].items[indexPath.row]
     item.didSelect()
+  }
+
+  public override func collectionView(
+    _ collectionView: UICollectionView,
+    willDisplay cell: UICollectionViewCell,
+    forItemAt indexPath: IndexPath)
+  {
+    let item = computedSections[indexPath.section].items[indexPath.row]
+    item.willDisplay()
   }
 
   private static func cellProvider(

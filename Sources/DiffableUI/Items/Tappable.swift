@@ -29,6 +29,7 @@ public struct Tappable<T: CollectionItem>: CollectionItem {
   }
 
   public func didSelect() {
+    _innerItem.didSelect()
     _action?()
   }
 

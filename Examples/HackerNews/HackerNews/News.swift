@@ -17,7 +17,7 @@ struct NewsItem: Codable, Hashable {
   let timeAgo: String
   let commentsCount: Int
   let url: String
-  let domain: String
+  let domain: String?
 }
 
 struct News: CollectionItem {
@@ -30,7 +30,7 @@ struct News: CollectionItem {
   var reuseIdentifier: String { "news-cell" }
   func configure(cell: NewsCell) {
     cell.title = item.title
-    cell.domain = "(\(item.domain))"
+    cell.domain = "(\(item.domain ?? ""))"
     cell.username = if let user = item.user {
       "by \(user)"
     } else { "" }

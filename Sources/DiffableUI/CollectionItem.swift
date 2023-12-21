@@ -19,6 +19,7 @@ public protocol CollectionItem: Equatable, Hashable, Identifiable {
   func configure(cell: CellType)
   func didSelect()
   func setBehaviors(cell: CellType)
+  func willDisplay()
 }
 
 // MARK: - Internal behavbiors & default conformances
@@ -28,6 +29,8 @@ extension CollectionItem {
   public func didSelect() {}
 
   public func setBehaviors(cell: CellType) {}
+
+  public func willDisplay() {}
 
   public var cellClass: CellType.Type {
     CellType.self
