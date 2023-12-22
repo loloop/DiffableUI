@@ -28,6 +28,8 @@ final class HackerNewsViewController: DiffableViewController {
     configureCollectionView()
 
     Task {
+      state = .loading
+      await reload()
       try await fetch()
     }
   }
@@ -38,7 +40,6 @@ final class HackerNewsViewController: DiffableViewController {
       primaryAction: .init(
         handler: { [weak self] _ in
           Task {
-            self?.state = .loading
             try await self?.fetch(fullyReload: true)
           }
         }))
