@@ -19,8 +19,3 @@ struct HackerNewsApp: App {
     }
   }
 }
-
-struct HackerNews: UIViewControllerRepresentable {
-  func makeUIViewController(context: Context) -> HackerNewsViewController { .init() }
-  func updateUIViewController(_ uiViewController: HackerNewsViewController, context: Context) {}
-}
