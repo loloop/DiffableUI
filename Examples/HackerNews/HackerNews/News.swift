@@ -9,7 +9,7 @@ import DiffableUI
 import Foundation
 import SwiftUI
 
-struct NewsItem: Codable, Hashable {
+struct NewsItem: Codable, Hashable, Identifiable {
   let id: Int
   let title: String
   let points: Int?

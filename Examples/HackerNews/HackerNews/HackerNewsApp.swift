@@ -19,5 +19,3 @@ struct HackerNewsApp: App {
     }
   }
 }
-
-

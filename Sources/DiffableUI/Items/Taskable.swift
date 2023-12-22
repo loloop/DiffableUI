@@ -27,7 +27,7 @@ public struct Taskable<T: CollectionItem>: CollectionItem {
   }
 
   public var reuseIdentifier: String {
-    _innerItem.reuseIdentifier + "-tappable"
+    _innerItem.reuseIdentifier + "-taskable"
   }
 
   public var item: some Hashable {

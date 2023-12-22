@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B40EFB6F2B34DF4300DE023E /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = B40EFB6E2B34DF4300DE023E /* Collections */; };
-		B40EFB712B34DF4300DE023E /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = B40EFB702B34DF4300DE023E /* DequeModule */; };
-		B40EFB732B34DF4300DE023E /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = B40EFB722B34DF4300DE023E /* OrderedCollections */; };
+		B40EFB752B36244600DE023E /* Identifiable+RemoveDuplicates.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40EFB742B36244600DE023E /* Identifiable+RemoveDuplicates.swift */; };
 		B44C4EE22B2CC1D000711A81 /* HackerNewsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44C4EE12B2CC1D000711A81 /* HackerNewsApp.swift */; };
 		B44C4EE42B2CC1D000711A81 /* HackerNewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44C4EE32B2CC1D000711A81 /* HackerNewsViewController.swift */; };
 		B44C4EE62B2CC1D100711A81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B44C4EE52B2CC1D100711A81 /* Assets.xcassets */; };
@@ -19,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B40EFB742B36244600DE023E /* Identifiable+RemoveDuplicates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identifiable+RemoveDuplicates.swift"; sourceTree = "<group>"; };
 		B44C4EDE2B2CC1D000711A81 /* HackerNews.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HackerNews.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B44C4EE12B2CC1D000711A81 /* HackerNewsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsApp.swift; sourceTree = "<group>"; };
 		B44C4EE32B2CC1D000711A81 /* HackerNewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackerNewsViewController.swift; sourceTree = "<group>"; };
@@ -33,10 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B40EFB6F2B34DF4300DE023E /* Collections in Frameworks */,
 				B44C4EF22B2CC1DC00711A81 /* DiffableUI in Frameworks */,
-				B40EFB732B34DF4300DE023E /* OrderedCollections in Frameworks */,
-				B40EFB712B34DF4300DE023E /* DequeModule in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,6 +63,7 @@
 				B44C4EE12B2CC1D000711A81 /* HackerNewsApp.swift */,
 				B44C4EE32B2CC1D000711A81 /* HackerNewsViewController.swift */,
 				B44C4EF32B2CD8F700711A81 /* News.swift */,
+				B40EFB742B36244600DE023E /* Identifiable+RemoveDuplicates.swift */,
 				B44C4EE52B2CC1D100711A81 /* Assets.xcassets */,
 				B44C4EE72B2CC1D100711A81 /* Preview Content */,
 			);
@@ -106,9 +103,6 @@
 			name = HackerNews;
 			packageProductDependencies = (
 				B44C4EF12B2CC1DC00711A81 /* DiffableUI */,
-				B40EFB6E2B34DF4300DE023E /* Collections */,
-				B40EFB702B34DF4300DE023E /* DequeModule */,
-				B40EFB722B34DF4300DE023E /* OrderedCollections */,
 			);
 			productName = HackerNews;
 			productReference = B44C4EDE2B2CC1D000711A81 /* HackerNews.app */;
@@ -139,7 +133,6 @@
 			);
 			mainGroup = B44C4ED52B2CC1D000711A81;
 			packageReferences = (
-				B40EFB6D2B34DF4300DE023E /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = B44C4EDF2B2CC1D000711A81 /* Products */;
 			projectDirPath = "";
@@ -168,6 +161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B44C4EE42B2CC1D000711A81 /* HackerNewsViewController.swift in Sources */,
+				B40EFB752B36244600DE023E /* Identifiable+RemoveDuplicates.swift in Sources */,
 				B44C4EF42B2CD8F700711A81 /* News.swift in Sources */,
 				B44C4EE22B2CC1D000711A81 /* HackerNewsApp.swift in Sources */,
 			);
@@ -380,33 +374,7 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		B40EFB6D2B34DF4300DE023E /* XCRemoteSwiftPackageReference "swift-collections" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-collections.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.6;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		B40EFB6E2B34DF4300DE023E /* Collections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B40EFB6D2B34DF4300DE023E /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = Collections;
-		};
-		B40EFB702B34DF4300DE023E /* DequeModule */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B40EFB6D2B34DF4300DE023E /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = DequeModule;
-		};
-		B40EFB722B34DF4300DE023E /* OrderedCollections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B40EFB6D2B34DF4300DE023E /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = OrderedCollections;
-		};
 		B44C4EF12B2CC1DC00711A81 /* DiffableUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DiffableUI;

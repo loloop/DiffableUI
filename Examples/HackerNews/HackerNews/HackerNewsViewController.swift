@@ -9,12 +9,16 @@ import DiffableUI
 import Foundation
 import SwiftUI
 import SafariServices
-import OrderedCollections
 
 enum APIState<T> {
   case idle
   case loading
   case finished(T)
+}
+
+struct Page<T: Hashable> {
+  let items: [T]
+  let currentPage: Int
 }
 
 final class HackerNewsViewController: DiffableViewController {
@@ -35,13 +39,12 @@ final class HackerNewsViewController: DiffableViewController {
         handler: { [weak self] _ in
           Task {
             self?.state = .loading
-            try await self?.fetch(page: 0)
+            try await self?.fetch(fullyReload: true)
           }
         }))
   }
 
-  var state: APIState<OrderedSet<NewsItem>> = .idle
-  var currentPage = 1
+  var state: APIState<Page<NewsItem>> = .idle
 
   @CollectionViewBuilder
   override var sections: [any CollectionSection] {
@@ -52,7 +55,7 @@ final class HackerNewsViewController: DiffableViewController {
       case .loading:
         ActivityIndicator()
       case .finished(let news):
-        ForEach(data: news) { item in
+        ForEach(data: news.items) { item in
           News(item)
             .onTap { [weak self] in
               guard let url = URL(string: item.url) else { return }
@@ -63,31 +66,46 @@ final class HackerNewsViewController: DiffableViewController {
             }
             .padding(.vertical(8).horizontal(12))
         }
-        ActivityIndicator()
-          .onAppear { [weak self] in
-            let page = self?.currentPage ?? 0
-            try await self?.fetch(page: page)
-          }
+        if news.currentPage < 10 {
+          ActivityIndicator()
+            .onAppear { [weak self] in
+              try await self?.fetch()
+            }
+        }
       }
     }
     .contentInsetsReference(.readableContent)
   }
 
-  func fetch(page: Int = 1) async throws {
-    guard let url = URL(string: "https://api.hackerwebapp.com/news?page=\(page)") else { return }
+  func fetch(fullyReload: Bool = false) async throws {
+    let currentPage = if case .finished(let page) = state, !fullyReload {
+      page.currentPage
+    } else {
+      1
+    }
+
+    guard let url = URL(
+      string: "https://api.hackerwebapp.com/news?page=\(currentPage)")
+    else { return }
+    
     let (data, _) = try await URLSession.shared.data(from: url)
     let decoder = JSONDecoder()
     decoder.keyDecodingStrategy = .convertFromSnakeCase
     let news = try decoder.decode([NewsItem].self, from: data)
 
     if case .finished(let t) = state {
-      state = .finished(OrderedSet(t+news))
+      state = .finished(
+        .init(
+          items: (t.items + news).removeDuplicates(),
+          currentPage: currentPage+1))
     } else {
-      state = .finished(OrderedSet(news))
+      state = .finished(
+        .init(
+          items: news,
+          currentPage: currentPage+1))
     }
 
     collectionView.refreshControl?.endRefreshing()
-    currentPage += 1
     await reload()
   }
 }
