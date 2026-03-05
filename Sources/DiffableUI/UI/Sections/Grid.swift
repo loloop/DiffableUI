@@ -9,26 +9,38 @@
 import Foundation
 import UIKit
 
+@available(iOS 16.0, *)
 public struct Grid: CollectionSection {
     public let id: AnyHashable
     public let items: [any CollectionItem]
     var configuration = Configuration()
     
     public func layout(environment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
+        let columns: Int
+        if let fixed = configuration.columns {
+            columns = fixed
+        } else {
+            let usableWidth = environment.container.effectiveContentSize.width
+                - configuration.insets.leading
+                - configuration.insets.trailing
+            columns = max(1, Int(usableWidth / configuration.minimumItemWidth))
+        }
+
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
+            widthDimension: .fractionalWidth(1.0 / CGFloat(columns)),
             heightDimension: configuration.itemHeight)
-        
+
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         item.contentInsets = configuration.itemInsets
-        
+
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
             heightDimension: configuration.itemHeight)
-        
+
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
-            subitems: [item]
+            repeatingSubitem: item,
+            count: columns
         )
         
         let section = NSCollectionLayoutSection(group: group)
@@ -40,6 +52,7 @@ public struct Grid: CollectionSection {
     }
 }
 
+@available(iOS 16.0, *)
 extension Grid {
     public init(
         id: String = "grid",
@@ -52,9 +65,11 @@ extension Grid {
 
 // MARK: - "ViewModifiers"
 
+@available(iOS 16.0, *)
 extension Grid {
     struct Configuration {
-        var columns: Int = 2
+        var columns: Int? = nil
+        var minimumItemWidth: CGFloat = 160
         var itemHeight: NSCollectionLayoutDimension = .estimated(100)
         var spacing: CGFloat = 0
         var insets: NSDirectionalEdgeInsets = .zero
@@ -62,9 +77,15 @@ extension Grid {
         var contentInsetsReference: UIContentInsetsReference = .automatic
     }
     
-    public func columns(_ columns: Int) -> Self {
+    public func columns(_ columns: Int?) -> Self {
         var copy = self
         copy.configuration.columns = columns
+        return copy
+    }
+
+    public func minimumItemWidth(_ width: CGFloat) -> Self {
+        var copy = self
+        copy.configuration.minimumItemWidth = width
         return copy
     }
     
