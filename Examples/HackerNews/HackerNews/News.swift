@@ -182,7 +182,7 @@ final class NewsCell: CollectionViewCell {
   }
 }
 
-#Preview {
+#Preview("NewsCell") {
   let cell = NewsCell()
   cell.title = "Not even LinkedIn is that keep on Microsoft's cloud: Shift to Azure abandoned"
   cell.domain = "(theregister.com)"
@@ -190,5 +190,152 @@ final class NewsCell: CollectionViewCell {
   cell.timePast = "1 hour ago"
   cell.commentCount = "15 comments"
   cell.points = "182"
+  return cell
+}
+
+// MARK: - Grid Item
+
+struct NewsGridItem: CollectionItem {
+  init(_ news: NewsItem) {
+    item = news
+  }
+
+  var id: AnyHashable { "grid-\(item.id)" }
+  var item: NewsItem
+  var reuseIdentifier: String { "news-grid-cell" }
+
+  func configure(cell: NewsGridCell) {
+    cell.title = item.title
+    cell.domain = item.domain.map { "(\($0))" }
+    cell.points = "\(item.points ?? 0)"
+    cell.commentCount = "\(item.commentsCount)"
+  }
+}
+
+final class NewsGridCell: CollectionViewCell {
+
+  override func setUp() {
+    super.setUp()
+    setUpViews()
+    setUpConstraints()
+  }
+
+  var title: String? {
+    get { titleLabel.text }
+    set { titleLabel.text = newValue }
+  }
+
+  var domain: String? {
+    get { domainLabel.text }
+    set { domainLabel.text = newValue }
+  }
+
+  var points: String? {
+    get { pointsLabel.text }
+    set { pointsLabel.text = newValue }
+  }
+
+  var commentCount: String? {
+    get { commentCountLabel.text }
+    set { commentCountLabel.text = newValue }
+  }
+
+  private let titleLabel = {
+    let label = UILabel()
+    label.numberOfLines = 3
+    label.adjustsFontForContentSizeCategory = true
+    label.font = .preferredFont(forTextStyle: .headline)
+    return label
+  }()
+
+  private let domainLabel = {
+    let label = UILabel()
+    label.adjustsFontForContentSizeCategory = true
+    label.font = .preferredFont(forTextStyle: .caption2)
+    label.textColor = .secondaryLabel
+    return label
+  }()
+
+  private let pointsArrow = {
+    let view = UIImageView()
+    view.image = UIImage(systemName: "triangle.fill")
+    view.tintColor = .label
+    view.contentMode = .scaleAspectFit
+    return view
+  }()
+
+  private let pointsLabel = {
+    let label = UILabel()
+    label.adjustsFontForContentSizeCategory = true
+    label.font = .preferredFont(forTextStyle: .caption1)
+    return label
+  }()
+
+  private let commentIcon = {
+    let view = UIImageView()
+    view.image = UIImage(systemName: "bubble.right")
+    view.tintColor = .secondaryLabel
+    view.contentMode = .scaleAspectFit
+    return view
+  }()
+
+  private let commentCountLabel = {
+    let label = UILabel()
+    label.adjustsFontForContentSizeCategory = true
+    label.font = .preferredFont(forTextStyle: .caption1)
+    label.textColor = .secondaryLabel
+    return label
+  }()
+
+  private lazy var statsStack = {
+    let stack = UIStackView(arrangedSubviews: [pointsArrow, pointsLabel, UIView(), commentIcon, commentCountLabel])
+    stack.axis = .horizontal
+    stack.spacing = 4
+    stack.alignment = .center
+    return stack
+  }()
+
+  private func setUpViews() {
+    contentView.backgroundColor = .secondarySystemBackground
+    contentView.layer.cornerRadius = 12
+    contentView.layer.cornerCurve = .continuous
+    contentView.directionalLayoutMargins = .all(12)
+
+    [titleLabel, domainLabel, statsStack].forEach {
+      $0.translatesAutoresizingMaskIntoConstraints = false
+      contentView.addSubview($0)
+    }
+  }
+
+  private func setUpConstraints() {
+    NSLayoutConstraint.activate([
+      titleLabel.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+      titleLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+      titleLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+
+      domainLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+      domainLabel.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+      domainLabel.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+
+      statsStack.topAnchor.constraint(equalTo: domainLabel.bottomAnchor, constant: 8),
+      statsStack.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+      statsStack.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+      statsStack.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
+
+      pointsArrow.widthAnchor.constraint(equalToConstant: 10),
+      pointsArrow.heightAnchor.constraint(equalToConstant: 10),
+
+      commentIcon.widthAnchor.constraint(equalToConstant: 12),
+      commentIcon.heightAnchor.constraint(equalToConstant: 12),
+    ])
+  }
+}
+
+#Preview("NewsGridCell") {
+  let cell = NewsGridCell()
+  cell.title = "Not even LinkedIn is that keep on Microsoft's cloud: Shift to Azure abandoned"
+  cell.domain = "(theregister.com)"
+  cell.points = "182"
+  cell.commentCount = "15"
   return cell
 }
