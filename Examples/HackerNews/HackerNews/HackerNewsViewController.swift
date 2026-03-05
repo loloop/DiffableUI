@@ -65,6 +65,24 @@ final class HackerNewsViewController: DiffableViewController {
                 .navigationController?
                 .present(controller, animated: true)
             }
+            .contextMenu(UIMenu(title: "", children: [
+              UIAction(
+                title: "Share",
+                image: UIImage(systemName: "square.and.arrow.up")
+              ) { [weak self] _ in
+                guard let url = URL(string: item.url) else { return }
+                let activity = UIActivityViewController(
+                  activityItems: [url],
+                  applicationActivities: nil)
+                self?.present(activity, animated: true)
+              },
+              UIAction(
+                title: "Copy Link",
+                image: UIImage(systemName: "link")
+              ) { _ in
+                UIPasteboard.general.url = URL(string: item.url)
+              },
+            ]))
             .padding(.vertical(8).horizontal(12))
         }
         if news.currentPage < 10 {

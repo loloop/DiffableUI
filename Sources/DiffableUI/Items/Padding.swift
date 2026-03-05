@@ -37,6 +37,10 @@ public struct Padding<T: CollectionItem>: CollectionItem {
   public func setBehaviors(cell: T.CellType) {
     _innerItem.setBehaviors(cell: cell)
   }
+    
+  public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
+      _innerItem.contextMenuConfiguration()
+  }
 
   public func configure(cell: T.CellType) {
     if let innerCell = cell as? CollectionViewCell {

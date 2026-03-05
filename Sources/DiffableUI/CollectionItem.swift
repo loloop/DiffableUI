@@ -20,9 +20,10 @@ public protocol CollectionItem: Equatable, Hashable, Identifiable {
   func didSelect()
   func setBehaviors(cell: CellType)
   func willDisplay()
+  func contextMenuConfiguration() -> UIContextMenuConfiguration?
 }
 
-// MARK: - Internal behavbiors & default conformances
+// MARK: - Internal behaviors & default conformances
 
 extension CollectionItem {
 
@@ -31,6 +32,10 @@ extension CollectionItem {
   public func setBehaviors(cell: CellType) {}
 
   public func willDisplay() {}
+    
+  public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
+    nil
+  }
 
   public var cellClass: CellType.Type {
     CellType.self
