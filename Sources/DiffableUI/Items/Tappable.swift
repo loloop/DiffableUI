@@ -6,6 +6,7 @@
 //
 #if canImport(UIKit)
 import Foundation
+import UIKit
 
 public struct Tappable<T: CollectionItem>: CollectionItem {
   init(item: T, action: @escaping () -> Void) {
@@ -39,6 +40,10 @@ public struct Tappable<T: CollectionItem>: CollectionItem {
 
   public func configure(cell: T.CellType) {
     _innerItem.configure(cell: cell)
+  }
+    
+  public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
+    _innerItem.contextMenuConfiguration()
   }
 }
 

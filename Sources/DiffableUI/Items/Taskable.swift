@@ -6,6 +6,7 @@
 //
 
 #if canImport(UIKit)
+import UIKit
 import Foundation
 
 public struct Taskable<T: CollectionItem>: CollectionItem {
@@ -51,6 +52,10 @@ public struct Taskable<T: CollectionItem>: CollectionItem {
     Task(priority: priority) {
       try await action?()
     }
+  }
+    
+  public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
+    _innerItem.contextMenuConfiguration()
   }
 }
 

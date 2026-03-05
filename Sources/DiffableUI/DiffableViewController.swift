@@ -139,6 +139,16 @@ open class DiffableViewController: UICollectionViewController {
     item.willDisplay()
   }
 
+  public override func collectionView(
+    _ collectionView: UICollectionView,
+    contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+    point: CGPoint) -> UIContextMenuConfiguration?
+  {
+    guard let indexPath = indexPaths.first else { return nil }
+    let item = computedSections[indexPath.section].items[indexPath.row]
+    return item.contextMenuConfiguration()
+  }
+
   private static func cellProvider(
     collectionView: UICollectionView,
     indexPath: IndexPath,
