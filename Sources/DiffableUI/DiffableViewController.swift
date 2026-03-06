@@ -9,8 +9,57 @@
 import Foundation
 import UIKit
 
+/// A view controller that manages a collection view with diffable data source.
+///
+/// `DiffableViewController` provides a declarative way to build collection views
+/// using compositional layouts and diffable data sources. Subclass this controller
+/// and override the ``sections`` property to define your collection view content.
+///
+/// ## Overview
+///
+/// The view controller automatically handles:
+/// - Setting up the diffable data source
+/// - Configuring the compositional layout
+/// - Managing cell registration and dequeuing
+/// - Handling item selection and display callbacks
+/// - Performing efficient updates with animations
+///
+/// ## Example
+///
+/// ```swift
+/// class MyViewController: DiffableViewController {
+///     @CollectionViewBuilder
+///     override var sections: [any CollectionSection] {
+///         ListSection {
+///             Text("Hello, World!")
+///             Button("Tap me") {
+///                 print("Button tapped")
+///             }
+///         }
+///     }
+/// }
+/// ```
+///
+/// ## Topics
+///
+/// ### Creating a View Controller
+///
+/// - ``init(configuration:)``
+///
+/// ### Defining Content
+///
+/// - ``sections``
+///
+/// ### Updating Content
+///
+/// - ``reload(animated:completion:)``
+/// - ``reload(animated:completion:)-4jmid``
 open class DiffableViewController: UICollectionViewController {
 
+  /// Creates a new diffable view controller.
+  ///
+  /// - Parameter configuration: The compositional layout configuration to use.
+  ///   The default configuration has no special behavior.
   public init(configuration: UICollectionViewCompositionalLayoutConfiguration = .init()) {
     layout = CollectionViewControllerLayout(configuration: configuration)
     super.init(collectionViewLayout: layout.compositionalLayout)
@@ -38,6 +87,14 @@ open class DiffableViewController: UICollectionViewController {
 
   private let layout: CollectionViewControllerLayout
 
+  /// Reloads the collection view with the current sections.
+  ///
+  /// This method recalculates the sections from the ``sections`` property and
+  /// applies the changes to the collection view using the diffable data source.
+  ///
+  /// - Parameters:
+  ///   - animated: Whether to animate the changes. Defaults to `true`.
+  ///   - completion: A closure to execute after the reload completes.
   public func reload(animated: Bool = true, completion: (() -> Void)? = nil) {
     let oldValue = self.computedSections
     self.computedSections = sections
@@ -56,6 +113,14 @@ open class DiffableViewController: UICollectionViewController {
         completion: completion)
   }
 
+  /// Asynchronously reloads the collection view with the current sections.
+  ///
+  /// This method recalculates the sections from the ``sections`` property and
+  /// applies the changes to the collection view using the diffable data source.
+  ///
+  /// - Parameters:
+  ///   - animated: Whether to animate the changes. Defaults to `true`.
+  ///   - completion: A closure to execute after the reload completes.
   @MainActor
   public func reload(animated: Bool = true, completion: (() -> Void)? = nil) async {
     let oldValue = self.computedSections
@@ -103,6 +168,26 @@ open class DiffableViewController: UICollectionViewController {
 
   private(set) var computedSections = [any CollectionSection]()
 
+  /// The sections to display in the collection view.
+  ///
+  /// Override this property in your subclass and use the `@CollectionViewBuilder`
+  /// attribute to define your collection view content declaratively.
+  ///
+  /// ```swift
+  /// @CollectionViewBuilder
+  /// override var sections: [any CollectionSection] {
+  ///     ListSection {
+  ///         Text("Item 1")
+  ///         Text("Item 2")
+  ///     }
+  ///     
+  ///     GridSection(columns: 2) {
+  ///         for i in 0..<10 {
+  ///             Text("Grid item \(i)")
+  ///         }
+  ///     }
+  /// }
+  /// ```
   @CollectionViewBuilder
   open var sections: [any CollectionSection] {
     fatalError("Override this with @CollectionViewBuilder!")
@@ -122,6 +207,10 @@ open class DiffableViewController: UICollectionViewController {
     }
   }
 
+  /// Handles item selection.
+  ///
+  /// This method is called when an item is selected and forwards the event
+  /// to the item's ``CollectionItem/didSelect()`` method.
   public override func collectionView(
     _ collectionView: UICollectionView,
     didSelectItemAt indexPath: IndexPath)
@@ -130,6 +219,10 @@ open class DiffableViewController: UICollectionViewController {
     item.didSelect()
   }
 
+  /// Handles cell display events.
+  ///
+  /// This method is called when a cell is about to be displayed and forwards
+  /// the event to the item's ``CollectionItem/willDisplay()`` method.
   public override func collectionView(
     _ collectionView: UICollectionView,
     willDisplay cell: UICollectionViewCell,

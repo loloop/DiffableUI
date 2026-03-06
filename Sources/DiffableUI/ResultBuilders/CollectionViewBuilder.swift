@@ -8,6 +8,29 @@
 #if canImport(UIKit)
 import Foundation
 
+/// A result builder that enables declarative syntax for composing collection view sections.
+///
+/// `CollectionViewBuilder` allows you to build collection views using a SwiftUI-like
+/// declarative syntax. It supports conditional statements, loops, and optional values.
+///
+/// ## Example
+///
+/// ```swift
+/// @CollectionViewBuilder
+/// var sections: [any CollectionSection] {
+///     ListSection {
+///         Text("Hello")
+///     }
+///     
+///     if showGrid {
+///         GridSection(columns: 2) {
+///             ForEach(items) { item in
+///                 ItemView(item: item)
+///             }
+///         }
+///     }
+/// }
+/// ```
 @resultBuilder
 public struct CollectionViewBuilder {
   public static func buildBlock(_ components: any CollectionSection...) -> [any CollectionSection] {
