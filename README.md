@@ -86,6 +86,12 @@ dependencies: [
   ],
 ```
 
+## Apps using DiffableUI
+
+- [Joguei](https://apps.apple.com/us/app/joguei/id6759177147) — a game library tracker that powers its main library view with DiffableUI.
+
+Is your app using DiffableUI? Open a pull request to add it to this list!
+
 ## Contributing and TODOs
 
 To contribute, just open a pull request and let's take it from there :) Here's a couple of suggestions:
