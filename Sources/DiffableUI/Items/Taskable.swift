@@ -57,6 +57,10 @@ public struct Taskable<T: CollectionItem>: CollectionItem {
   public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
     _innerItem.contextMenuConfiguration()
   }
+
+  public func contextMenuPreviewParameters(for cell: T.CellType) -> UIPreviewParameters? {
+    _innerItem.contextMenuPreviewParameters(for: cell)
+  }
 }
 
 extension CollectionItem {

@@ -87,8 +87,7 @@ final class HackerNewsViewController: DiffableViewController {
           }
           .minimumItemWidth(180)
           .spacing(8)
-          .insets(.horizontal(12).vertical(8))
-          .itemInsets(.all(4))
+          .insets(.horizontal(16).vertical(8))
         }
       }
     } else {

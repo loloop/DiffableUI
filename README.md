@@ -76,6 +76,29 @@ extension Label {
 
 To create a new `CollectionSection`, you must provide an identifier, some way to hold `[any CollectionItem]` and provide a function that returns a `NSCollectionLayoutSection`. Check out [List](/Sources/DiffableUI/UI/Sections/List.swift) for more details.
 
+## Grids
+
+On iOS 16 and later, `Grid` lays items out in equally wide columns. Like SwiftUI's `GridItem(.adaptive(minimum:spacing:))`, it fits as many columns of at least `minimumItemWidth` as the width allows, and `spacing` separates both columns and rows:
+
+```swift
+Grid {
+  ForEach(data: games) { game in
+    HostingItem(id: game.id) {
+      GameCard(game)
+    }
+    .contextMenu(menu(for: game), previewPadding: 8, previewCornerRadius: 20)
+  }
+}
+.minimumItemWidth(160)
+.minimumColumns(2)
+.spacing(12)
+.insets(.horizontal(16))
+```
+
+`insets` sets the space between the outermost items and the edges of the section, `itemInsets` adds extra space inside every item, and `columns(_:)` fixes the column count instead.
+
+`HostingItem` renders SwiftUI views edge to edge in its cell, so the section's layout alone decides the space around them. Pass `margins:` to pad the content inside the cell. Because those cells hug their content, `contextMenu(_:previewPadding:previewCornerRadius:)` can add room around the lifted preview. Leave `previewPadding` out to keep UIKit's default preview.
+
 ## Installation
 
 You can add DiffableUI to your project by using Xcode's "Add Package Dependencies" option in the File menu, or add it as a dependency on your Package.swift file as:
@@ -94,7 +117,13 @@ Is your app using DiffableUI? Open a pull request to add it to this list!
 
 ## Contributing and TODOs
 
-To contribute, just open a pull request and let's take it from there :) Here's a couple of suggestions:
+To contribute, just open a pull request and let's take it from there :) DiffableUI is UIKit-only, so `swift test` on macOS compiles nothing. Run the tests on an iOS Simulator instead:
+
+```sh
+xcodebuild test -scheme DiffableUI -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
+```
+
+Here's a couple of suggestions:
 
 - [ ] DocC Documentation
 - [ ] Swipe Actions
