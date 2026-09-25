@@ -13,7 +13,7 @@ let package = Package(
   ],
   targets: [
     .target(name: "DiffableUI"),
-    // No tests yet, sorry!
-    // .testTarget(name: "DiffableUITests", dependencies: ["DiffableUI"]),
+    // UIKit-only: run with `xcodebuild test` on an iOS Simulator, not `swift test`.
+    .testTarget(name: "DiffableUITests", dependencies: ["DiffableUI"]),
   ]
 )

@@ -42,6 +42,10 @@ public struct Padding<T: CollectionItem>: CollectionItem {
       _innerItem.contextMenuConfiguration()
   }
 
+  public func contextMenuPreviewParameters(for cell: T.CellType) -> UIPreviewParameters? {
+    _innerItem.contextMenuPreviewParameters(for: cell)
+  }
+
   public func configure(cell: T.CellType) {
     if let innerCell = cell as? CollectionViewCell {
       innerCell.directionalLayoutMargins = insets
@@ -52,6 +56,8 @@ public struct Padding<T: CollectionItem>: CollectionItem {
 }
 
 extension CollectionItem {
+  /// Insets the content of items whose cell is a `CollectionViewCell`, through the
+  /// cell's layout margins. For `HostingItem`, pass `margins` to its initializer instead.
   public func padding(_ insets: NSDirectionalEdgeInsets) -> some CollectionItem {
     Padding(item: self, padding: insets)
   }

@@ -149,6 +149,44 @@ open class DiffableViewController: UICollectionViewController {
     return item.contextMenuConfiguration()
   }
 
+  open override func collectionView(
+    _ collectionView: UICollectionView,
+    contextMenuConfiguration configuration: UIContextMenuConfiguration,
+    highlightPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview?
+  {
+    contextMenuPreview(forItemAt: indexPath, in: collectionView)
+  }
+
+  open override func collectionView(
+    _ collectionView: UICollectionView,
+    contextMenuConfiguration configuration: UIContextMenuConfiguration,
+    dismissalPreviewForItemAt indexPath: IndexPath) -> UITargetedPreview?
+  {
+    contextMenuPreview(forItemAt: indexPath, in: collectionView)
+  }
+
+  /// The cell's preview drawn with its item's `contextMenuPreviewParameters(for:)`,
+  /// or `nil`, which tells UIKit to use its default preview.
+  private func contextMenuPreview(
+    forItemAt indexPath: IndexPath,
+    in collectionView: UICollectionView) -> UITargetedPreview?
+  {
+    guard
+      computedSections.indices.contains(indexPath.section),
+      computedSections[indexPath.section].items.indices.contains(indexPath.row),
+      let cell = collectionView.cellForItem(at: indexPath),
+      cell.window != nil
+    else {
+      return nil
+    }
+
+    let item = computedSections[indexPath.section].items[indexPath.row]
+    guard let parameters = item.contextMenuPreviewParametersForCell(cell) else {
+      return nil
+    }
+    return UITargetedPreview(view: cell, parameters: parameters)
+  }
+
   private static func cellProvider(
     collectionView: UICollectionView,
     indexPath: IndexPath,

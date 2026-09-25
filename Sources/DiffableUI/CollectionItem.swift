@@ -21,6 +21,10 @@ public protocol CollectionItem: Equatable, Hashable, Identifiable {
   func setBehaviors(cell: CellType)
   func willDisplay()
   func contextMenuConfiguration() -> UIContextMenuConfiguration?
+  /// How UIKit draws `cell` while its context menu is open: the lifted preview,
+  /// and the one that animates back when the menu closes.
+  /// Return `nil`, the default, to keep UIKit's default preview.
+  func contextMenuPreviewParameters(for cell: CellType) -> UIPreviewParameters?
 }
 
 // MARK: - Internal behaviors & default conformances
@@ -37,6 +41,10 @@ extension CollectionItem {
     nil
   }
 
+  public func contextMenuPreviewParameters(for cell: CellType) -> UIPreviewParameters? {
+    nil
+  }
+
   public var cellClass: CellType.Type {
     CellType.self
   }
@@ -49,6 +57,11 @@ extension CollectionItem {
   func setCellBehaviors(_ cell: UICollectionViewCell) {
     guard let innerCell = cell as? CellType else { return }
     setBehaviors(cell: innerCell)
+  }
+
+  func contextMenuPreviewParametersForCell(_ cell: UICollectionViewCell) -> UIPreviewParameters? {
+    guard let innerCell = cell as? CellType else { return nil }
+    return contextMenuPreviewParameters(for: innerCell)
   }
 
   func isItemEqual(to otherItem: any Hashable) -> Bool {
