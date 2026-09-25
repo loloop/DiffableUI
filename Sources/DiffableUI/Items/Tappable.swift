@@ -41,7 +41,11 @@ public struct Tappable<T: CollectionItem>: CollectionItem {
   public func configure(cell: T.CellType) {
     _innerItem.configure(cell: cell)
   }
-    
+
+  public func willDisplay() {
+    _innerItem.willDisplay()
+  }
+
   public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
     _innerItem.contextMenuConfiguration()
   }
