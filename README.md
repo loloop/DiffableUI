@@ -62,7 +62,18 @@ DiffableUI is built with SwiftUI-like extensibility in mind. Use the library's e
   }
 ```
 
-or create your own by extending `CollectionItem` or its concrete implementations themselves directly:
+`onAppear` runs async work on the main actor each time an item's cell is about to be displayed, like SwiftUI's `task`. An action that throws needs an `onError` handler, so errors can't be silently dropped:
+
+```swift
+ActivityIndicator()
+  .onAppear { [weak self] in
+    try await self?.loadNextPage()
+  } onError: { [weak self] error in
+    self?.show(error)
+  }
+```
+
+You can also create your own by extending `CollectionItem` or its concrete implementations themselves directly:
 
 ```swift
 extension Label {
