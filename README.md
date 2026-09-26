@@ -97,7 +97,7 @@ Grid {
 
 `insets` sets the space between the outermost items and the edges of the section, `itemInsets` adds extra space inside every item, and `columns(_:)` fixes the column count instead.
 
-`HostingItem` renders SwiftUI views edge to edge in its cell, so the section's layout alone decides the space around them. Pass `margins:` to pad the content inside the cell. Because those cells hug their content, `contextMenu(_:previewPadding:previewCornerRadius:)` can add room around the lifted preview. Leave `previewPadding` out to keep UIKit's default preview.
+`HostingItem` renders SwiftUI views edge to edge in its cell, so the section's layout alone decides the space around them. Give it a stable `id`, like your model's, so `reload()` updates its cell with the new content instead of replacing the cell. Pass `margins:` to pad the content inside the cell. Because those cells hug their content, `contextMenu(_:previewPadding:previewCornerRadius:)` can add room around the lifted preview. Leave `previewPadding` out to keep UIKit's default preview.
 
 ## Installation
 
@@ -105,8 +105,8 @@ You can add DiffableUI to your project by using Xcode's "Add Package Dependencie
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/loloop/DiffableUI",from: Version(0, 0, 1)),
-  ],
+  .package(url: "https://github.com/loloop/DiffableUI", from: "1.0.0"),
+],
 ```
 
 ## Apps using DiffableUI
@@ -128,7 +128,7 @@ Here's a couple of suggestions:
 - [ ] DocC Documentation
 - [ ] Swipe Actions
 - [ ] State management
-- [ ] Unit tests
+- [x] Unit tests
 - [ ] Support for platforms other than iOS/iPadOS
 
 ## License

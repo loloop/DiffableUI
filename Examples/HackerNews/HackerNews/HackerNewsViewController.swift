@@ -58,7 +58,7 @@ final class HackerNewsViewController: DiffableViewController {
       Label("View mode")
             .textAlignment(.center)
 
-      Toggle(state: isGridMode)
+      Toggle(id: "view-mode", state: isGridMode)
         .onChange { [weak self] _ in
           self?.toggleViewMode()
         }
