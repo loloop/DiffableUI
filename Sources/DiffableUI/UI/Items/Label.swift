@@ -36,7 +36,7 @@ extension Label {
     var fontStyle: UIFont.TextStyle = .body
   }
 
-  func configure(cell: LabelCell, configuration: Configuration) {
+  @MainActor func configure(cell: LabelCell, configuration: Configuration) {
     cell.textAlignment = configuration.alignment
     cell.textColor = configuration.textColor
     cell.setFontStyle(configuration.fontStyle)

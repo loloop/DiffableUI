@@ -1,6 +1,6 @@
 # DiffableUI
 
-![](https://github.com/loloop/DiffableUI/actions/workflows/build.yml/badge.svg) ![](https://img.shields.io/badge/maintained-Yes-green) ![](https://img.shields.io/badge/swift-5.9-green) ![](https://img.shields.io/badge/iOS-14.0-red)
+![](https://github.com/loloop/DiffableUI/actions/workflows/build.yml/badge.svg) ![](https://img.shields.io/badge/maintained-Yes-green) ![](https://img.shields.io/badge/swift-6.0-green) ![](https://img.shields.io/badge/iOS-14.0-red)
 
 DiffableUI is a set of wrappers and helpers built on top of UICollectionViewCompositionalLayout and UICollectionViewDiffableDataSource to help you write clean, reusable and SwiftUI-like code on the UIKit world.
 

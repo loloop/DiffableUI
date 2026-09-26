@@ -39,78 +39,76 @@ open class DiffableViewController: UICollectionViewController {
   private let layout: CollectionViewControllerLayout
 
   public func reload(animated: Bool = true, completion: (() -> Void)? = nil) {
-    let oldValue = self.computedSections
-    self.computedSections = sections
-
-    updateAllVisibleItems(
-      oldSections: oldValue,
-      newSections: sections,
-      collectionView: collectionView,
-      dataSource: diffableDataSource)
-
-    let shouldAnimate = animated && !oldValue.isEmpty && !computedSections.isEmpty
-
-      diffableDataSource.apply(
-        computedSections.snapshot,
-        animatingDifferences: shouldAnimate,
-        completion: completion)
+    apply(sections, animated: animated, completion: completion)
   }
 
   @MainActor
   public func reload(animated: Bool = true, completion: (() -> Void)? = nil) async {
-    let oldValue = self.computedSections
-    self.computedSections = sections
+    apply(sections, animated: animated, completion: completion)
+  }
+
+  private func apply(
+    _ newSections: [any CollectionSection],
+    animated: Bool,
+    completion: (() -> Void)?)
+  {
+    let oldSections = computedSections
+    computedSections = newSections
+    let snapshot = snapshotIDs.snapshot(of: newSections)
 
     updateAllVisibleItems(
-      oldSections: oldValue,
-      newSections: sections,
-      collectionView: collectionView,
-      dataSource: diffableDataSource)
+      oldSections: oldSections,
+      newSections: newSections,
+      newSnapshot: snapshot)
 
-    let shouldAnimate = animated && !oldValue.isEmpty && !computedSections.isEmpty
+    let shouldAnimate = animated && !oldSections.isEmpty && !newSections.isEmpty
 
     diffableDataSource.apply(
-      computedSections.snapshot,
+      snapshot,
       animatingDifferences: shouldAnimate,
       completion: completion)
   }
 
+  /// Reconfigures the visible cells whose item changed, since the data source only
+  /// asks for the cells it inserts. Runs before `newSnapshot` is applied, while the
+  /// data source still has each identifier at its item's index path in `oldSections`.
   private func updateAllVisibleItems(
     oldSections: [any CollectionSection],
     newSections: [any CollectionSection],
-    collectionView: UICollectionView,
-    dataSource: UICollectionViewDiffableDataSource<AnyHashable, AnyHashable>?)
+    newSnapshot: NSDiffableDataSourceSnapshot<SnapshotID, SnapshotID>)
   {
-    let oldItems = oldSections.flatMap { $0.items }
     let newItems = newSections.flatMap { $0.items }
 
-    for newItem in newItems {
+    for (newItem, itemID) in zip(newItems, newSnapshot.itemIdentifiers) {
       guard
-        let oldItem = oldItems.first(where: { $0.id == newItem.id }),
-        let indexPath = dataSource?.indexPath(for: AnyHashable(newItem))
+        let indexPath = diffableDataSource.indexPath(for: itemID),
+        let cell = collectionView.cellForItem(at: indexPath)
       else {
         continue
       }
 
-      if let cell = collectionView.cellForItem(at: indexPath) {
-        if !newItem.isItemEqual(to: oldItem.item) {
-          newItem.configureCell(cell)
-        }
-        newItem.setCellBehaviors(cell)
+      let oldItem = oldSections[indexPath.section].items[indexPath.row]
+      if !newItem.isItemEqual(to: oldItem.item) {
+        newItem.configureCell(cell)
       }
+      newItem.setCellBehaviors(cell)
     }
   }
 
   private(set) var computedSections = [any CollectionSection]()
+
+  private var snapshotIDs = SnapshotIDs()
 
   @CollectionViewBuilder
   open var sections: [any CollectionSection] {
     fatalError("Override this with @CollectionViewBuilder!")
   }
 
-  private lazy var diffableDataSource = UICollectionViewDiffableDataSource<AnyHashable, AnyHashable>(
+  private lazy var diffableDataSource = UICollectionViewDiffableDataSource<SnapshotID, SnapshotID>(
     collectionView: collectionView,
-    cellProvider: Self.cellProvider)
+    cellProvider: { [weak self] collectionView, indexPath, _ in
+      self?.cell(in: collectionView, at: indexPath) ?? UICollectionViewCell()
+    })
 
   private func setUpLayout() {
     layout.sectionProvider = { [weak self] index, layoutEnvironment in
@@ -187,15 +185,15 @@ open class DiffableViewController: UICollectionViewController {
     return UITargetedPreview(view: cell, parameters: parameters)
   }
 
-  private static func cellProvider(
-    collectionView: UICollectionView,
-    indexPath: IndexPath,
-    item: AnyHashable)
+  /// The data source's cell provider. The snapshot only holds identifiers, so the
+  /// item comes from `computedSections`, which is assigned before each snapshot built
+  /// from it is applied. Their index paths match.
+  private func cell(
+    in collectionView: UICollectionView,
+    at indexPath: IndexPath)
     -> UICollectionViewCell
   {
-    guard let collectionItem = item.base as? any CollectionItem else {
-      return UICollectionViewCell()
-    }
+    let collectionItem = computedSections[indexPath.section].items[indexPath.row]
     collectionView.register(
       collectionItem.cellClass,
       forCellWithReuseIdentifier: collectionItem.reuseIdentifier)
@@ -210,6 +208,7 @@ open class DiffableViewController: UICollectionViewController {
   }
 }
 
+@MainActor
 final class CollectionViewControllerLayout {
 
   init(configuration: UICollectionViewCompositionalLayoutConfiguration) {
