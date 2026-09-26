@@ -14,7 +14,11 @@ import UIKit
 public struct Toggle: CollectionItem {
   
   // This is where bindings come in handy with SwiftUI
-  public init(_ id: AnyHashable = UUID(), state: Bool) {
+  /// - Parameters:
+  ///   - id: Identifies the toggle across reloads, so a reload updates its cell
+  ///     instead of removing it and inserting a new one.
+  ///   - state: Whether the toggle is on.
+  public init(id: AnyHashable, state: Bool) {
     self.id = id
     self.item = state
   }
