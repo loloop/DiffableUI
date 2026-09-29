@@ -29,7 +29,7 @@ final class HackerNewsViewController: DiffableViewController {
     Task {
       state = .loading
       await reload()
-      try await fetch()
+      await load()
     }
   }
 
@@ -39,9 +39,29 @@ final class HackerNewsViewController: DiffableViewController {
       primaryAction: .init(
         handler: { [weak self] _ in
           Task {
-            try await self?.fetch(fullyReload: true)
+            await self?.load(fullyReload: true)
           }
         }))
+  }
+
+  /// Fetches the news and shows any error, so a failed load doesn't go unnoticed.
+  func load(fullyReload: Bool = false) async {
+    do {
+      try await fetch(fullyReload: fullyReload)
+    } catch {
+      show(error)
+    }
+  }
+
+  func show(_ error: any Error) {
+    collectionView.refreshControl?.endRefreshing()
+    guard presentedViewController == nil else { return }
+    let alert = UIAlertController(
+      title: "Couldn't load the news",
+      message: error.localizedDescription,
+      preferredStyle: .alert)
+    alert.addAction(UIAlertAction(title: "OK", style: .default))
+    present(alert, animated: true)
   }
 
   var state: APIState<Page<NewsItem>> = .idle
@@ -82,6 +102,8 @@ final class HackerNewsViewController: DiffableViewController {
               ActivityIndicator()
                 .onAppear { [weak self] in
                   try await self?.fetch()
+                } onError: { [weak self] error in
+                  self?.show(error)
                 }
             }
           }
@@ -131,6 +153,8 @@ final class HackerNewsViewController: DiffableViewController {
             ActivityIndicator()
               .onAppear { [weak self] in
                 try await self?.fetch()
+              } onError: { [weak self] error in
+                self?.show(error)
               }
           }
         }
