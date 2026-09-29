@@ -51,7 +51,7 @@ public struct Taskable<T: CollectionItem>: CollectionItem {
 
   public func willDisplay() {
     _innerItem.willDisplay()
-    Task(priority: priority) { @MainActor [action] in
+    Task(priority: priority) { @MainActor in
       await action()
     }
   }
