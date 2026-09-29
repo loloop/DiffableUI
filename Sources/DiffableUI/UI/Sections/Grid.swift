@@ -65,9 +65,11 @@ public struct Grid: CollectionSection {
         // row, so `interItemSpacing` would overflow the row.)
         let halfSpacing = configuration.spacing / 2
 
+        let itemHeight = configuration.itemHeight ?? .estimated(100)
+
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0 / CGFloat(columns)),
-            heightDimension: configuration.itemHeight)
+            heightDimension: itemHeight)
 
         var itemInsets = configuration.itemInsets
         itemInsets.leading += halfSpacing
@@ -78,7 +80,7 @@ public struct Grid: CollectionSection {
 
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: configuration.itemHeight)
+            heightDimension: itemHeight)
 
         let group = NSCollectionLayoutGroup.horizontal(
             layoutSize: groupSize,
@@ -118,7 +120,9 @@ extension Grid {
         var columns: Int? = nil
         var minimumItemWidth: CGFloat = 160
         var minimumColumns: Int = 1
-        var itemHeight: NSCollectionLayoutDimension = .estimated(100)
+        /// `nil` for the default, an estimated 100 points. UIKit only makes
+        /// dimensions on the main actor, so `layout(environment:)` fills it in.
+        var itemHeight: NSCollectionLayoutDimension?
         var spacing: CGFloat = 0
         var insets: NSDirectionalEdgeInsets = .zero
         var itemInsets: NSDirectionalEdgeInsets = .zero

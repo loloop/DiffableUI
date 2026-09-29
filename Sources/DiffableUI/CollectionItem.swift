@@ -9,6 +9,12 @@
 import Foundation
 import UIKit
 
+/// Something to show in a cell.
+///
+/// The requirements that use the cell or respond to UIKit are `@MainActor`, since UIKit
+/// calls them on the main thread. The protocol itself isn't, so `id`, `item` and
+/// `Hashable` work anywhere. Implementations declared together with the conformance
+/// pick up `@MainActor`, so `configure(cell:)` can use the cell directly.
 public protocol CollectionItem: Equatable, Hashable, Identifiable {
   associatedtype CellType: UICollectionViewCell
   associatedtype ItemType: Hashable & Equatable
@@ -16,32 +22,32 @@ public protocol CollectionItem: Equatable, Hashable, Identifiable {
   var item: ItemType { get }
   var cellClass: CellType.Type { get }
   var reuseIdentifier: String { get }
-  func configure(cell: CellType)
-  func didSelect()
-  func setBehaviors(cell: CellType)
-  func willDisplay()
-  func contextMenuConfiguration() -> UIContextMenuConfiguration?
+  @MainActor func configure(cell: CellType)
+  @MainActor func didSelect()
+  @MainActor func setBehaviors(cell: CellType)
+  @MainActor func willDisplay()
+  @MainActor func contextMenuConfiguration() -> UIContextMenuConfiguration?
   /// How UIKit draws `cell` while its context menu is open: the lifted preview,
   /// and the one that animates back when the menu closes.
   /// Return `nil`, the default, to keep UIKit's default preview.
-  func contextMenuPreviewParameters(for cell: CellType) -> UIPreviewParameters?
+  @MainActor func contextMenuPreviewParameters(for cell: CellType) -> UIPreviewParameters?
 }
 
 // MARK: - Internal behaviors & default conformances
 
 extension CollectionItem {
 
-  public func didSelect() {}
+  @MainActor public func didSelect() {}
 
-  public func setBehaviors(cell: CellType) {}
+  @MainActor public func setBehaviors(cell: CellType) {}
 
-  public func willDisplay() {}
-    
-  public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
+  @MainActor public func willDisplay() {}
+
+  @MainActor public func contextMenuConfiguration() -> UIContextMenuConfiguration? {
     nil
   }
 
-  public func contextMenuPreviewParameters(for cell: CellType) -> UIPreviewParameters? {
+  @MainActor public func contextMenuPreviewParameters(for cell: CellType) -> UIPreviewParameters? {
     nil
   }
 
@@ -49,17 +55,17 @@ extension CollectionItem {
     CellType.self
   }
 
-  func configureCell(_ cell: UICollectionViewCell) {
+  @MainActor func configureCell(_ cell: UICollectionViewCell) {
     guard let innerCell = cell as? CellType else { return }
     configure(cell: innerCell)
   }
 
-  func setCellBehaviors(_ cell: UICollectionViewCell) {
+  @MainActor func setCellBehaviors(_ cell: UICollectionViewCell) {
     guard let innerCell = cell as? CellType else { return }
     setBehaviors(cell: innerCell)
   }
 
-  func contextMenuPreviewParametersForCell(_ cell: UICollectionViewCell) -> UIPreviewParameters? {
+  @MainActor func contextMenuPreviewParametersForCell(_ cell: UICollectionViewCell) -> UIPreviewParameters? {
     guard let innerCell = cell as? CellType else { return nil }
     return contextMenuPreviewParameters(for: innerCell)
   }

@@ -18,7 +18,7 @@ public struct List: CollectionSection {
   public func layout(environment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
     let itemSize = NSCollectionLayoutSize(
       widthDimension: .fractionalWidth(1),
-      heightDimension: configuration.itemHeight)
+      heightDimension: configuration.itemHeight ?? .estimated(100))
 
     let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
@@ -50,7 +50,9 @@ extension List {
 
 extension List {
   struct Configuration {
-    var itemHeight: NSCollectionLayoutDimension = .estimated(100)
+    /// `nil` for the default, an estimated 100 points. UIKit only makes
+    /// dimensions on the main actor, so `layout(environment:)` fills it in.
+    var itemHeight: NSCollectionLayoutDimension?
     var insets: NSDirectionalEdgeInsets = .zero
     var contentInsetsReference: UIContentInsetsReference = .automatic
   }
